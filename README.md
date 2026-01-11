@@ -1,73 +1,21 @@
-# React + TypeScript + Vite
+# Anisotropic Kuwahara Filtering
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple website running the anisotropic Kuwahara filter on user-provided images, implemented as a THREE.js shader effect written in GLSL. [Live version running on GitHub Pages](https://badbadbadbadbad.github.io/anisotropic-kuwahara)
 
-Currently, two official plugins are available:
+# Usage
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Upload an image by dropping it into the website, adjust the filter parameters using the GUI in the top right, and download the filtered image for your personal use.
 
-## React Compiler
+# References
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [Kuwahara filter](https://en.wikipedia.org/wiki/Kuwahara_filter): Kuwahara's original filter, proposed for the denoising of medical imaging. Due to the use of a square kernel, the images tend to look very "blocky".
 
-## Expanding the ESLint configuration
+- [Generalized Kuwahara filter](https://www.researchgate.net/publication/221226072_Edge_and_corner_preserving_smoothing_for_artistic_imaging): An improvement on the original Kuwahara filter through usage of a Gaussian Kernel. Provides improved smoothing, but still leaves the image looking too "blocky".
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- [Anisotropic Kuwahara filter](https://www.kyprianidis.com/p/pg2009/jkyprian-pg2009.pdf): This version uses the local anisotropy of each pixel to change the kernel shape, thereby smoothing the image while respecting directionality of image regions and producing an image that appears to be created through water painting. Further improvements in efficiency can be made by using [polynomial weighting functions](https://www.umsl.edu/~kangh/Papers/kang-tpcg2010.pdf) to approximate the filter.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- [Video on Kuwahara filtering](https://www.youtube.com/watch?v=LDhN-JK3U9g): A YouTube video by Acerola where I first heard of the filter and got the inspiration to develop an in-browser version.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- [Image source](https://www.elitetreecare.com/2018/12/the-risk-of-snow-on-trees/)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- [Upload icon source](https://feathericons.com/?query=upload)
