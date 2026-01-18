@@ -12,6 +12,7 @@ type BuiltPass = { effect: any; pass: ShaderPass };
 export class PipelineController {
     private readonly scene: THREE.Scene;
     private readonly camera: THREE.Camera;
+    private readonly canvas: HTMLCanvasElement;
 
     private composer: EffectComposer;
     private gui: GUI;
@@ -23,6 +24,8 @@ export class PipelineController {
     constructor(renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera) {
         this.scene = scene;
         this.camera = camera;
+
+        this.canvas = renderer.domElement;
 
         this.composer = new EffectComposer(renderer);
         this.gui = new GUI();
@@ -74,6 +77,8 @@ export class PipelineController {
         this.gui.destroy();
         this.gui = new GUI();
 
+        this.gui.add({ downloadImage: () => this.downloadImage() }, "downloadImage").name("Download image");
+
         const options = Object.fromEntries(
             PIPELINE_LIST.map((pipeline) => [pipeline.label, pipeline.id])
         ) as Record<string, PipelineId>;
@@ -92,5 +97,15 @@ export class PipelineController {
             if (!effect.buildGui) continue;
             effect.buildGui(settings as any, pass.uniforms, () => this.render());
         }
+    }
+
+    private downloadImage(): void {
+        this.render();
+
+        const dataUrl = this.canvas.toDataURL("image/png");
+        const link = document.createElement("a");
+        link.href = dataUrl;
+        link.download = "screenshot.png";
+        link.click();
     }
 }
