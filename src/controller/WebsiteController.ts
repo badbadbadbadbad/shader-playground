@@ -1,6 +1,6 @@
 import * as THREE from "three";
-import type { AppModel } from "../model/AppModel.ts";
-import { AppModel as AppModelImpl } from "../model/AppModel.ts";
+import type { ImageModel } from "../model/ImageModel.ts";
+import { ImageModel as AppModelImpl } from "../model/ImageModel.ts";
 import { LeftCanvas } from "../view/LeftCanvas.ts";
 import { RightCanvas } from "../view/RightCanvas.ts";
 import { fitRect, isImage, readImageAsDataUrl, getImageAspectFromTexture } from "../util/imageUtils.ts";
@@ -14,8 +14,8 @@ export type ViewHandles = {
     fileInput: HTMLInputElement;
 };
 
-export default class MainController {
-    private model: AppModel = new AppModelImpl();
+export default class WebsiteController {
+    private model: ImageModel = new AppModelImpl();
     private leftView!: LeftCanvas;
     private rightView!: RightCanvas;
 

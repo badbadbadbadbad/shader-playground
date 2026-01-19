@@ -4,8 +4,8 @@ import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
 import GUI from "lil-gui";
 
-import type { PipelineId } from "../shaders/pipelines/types";
-import { PIPELINES, PIPELINE_LIST } from "../shaders/pipelines/registry";
+import { PIPELINES, PIPELINE_LIST } from "../shaders/pipelines/PipelineRegistry.ts";
+import {PIPELINE_IDS, type PipelineId} from "../shaders/pipelines/PipelineId.ts";
 
 type BuiltPass = { effect: any; pass: ShaderPass };
 
@@ -16,8 +16,8 @@ export class PipelineController {
 
     private composer: EffectComposer;
     private gui: GUI;
-    private activeId: PipelineId = "anisotropicKuwahara";
-    private guiState: { activePipeline: PipelineId } = { activePipeline: "anisotropicKuwahara" };
+    private activeId: PipelineId = PIPELINE_IDS.ANISOTROPIC_KUWAHARA;
+    private guiState: { activePipeline: PipelineId } = { activePipeline: PIPELINE_IDS.ANISOTROPIC_KUWAHARA };
 
     private built: BuiltPass[] = [];
 
@@ -95,7 +95,7 @@ export class PipelineController {
 
         for (const { effect, pass } of this.built) {
             if (!effect.buildGui) continue;
-            effect.buildGui(settings as any, pass.uniforms, () => this.render());
+            effect.buildGui(settings as any, pass.uniforms, () => this.render(), effect);
         }
     }
 
@@ -105,7 +105,7 @@ export class PipelineController {
         const dataUrl = this.canvas.toDataURL("image/png");
         const link = document.createElement("a");
         link.href = dataUrl;
-        link.download = "screenshot.png";
+        link.download = "render.png";
         link.click();
     }
 }

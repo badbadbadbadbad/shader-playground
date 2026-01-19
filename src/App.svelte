@@ -1,13 +1,13 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import MainController from "./controller/MainController.ts";
+    import WebsiteController from "./controller/WebsiteController.ts";
     import githubIcon from "./assets/icon/github-mark-white.svg";
 
     let leftCanvasHost!: HTMLDivElement;
     let rightCanvasHost!: HTMLDivElement;
     let fileInput!: HTMLInputElement;
 
-    const controller = new MainController();
+    const controller = new WebsiteController();
 
     onMount(() => {
         controller.init({ leftCanvasHost, rightCanvasHost, fileInput });

@@ -1,11 +1,11 @@
-import type { AppModel } from "../model/AppModel";
+import type { ImageModel } from "../model/ImageModel.ts";
 import { ThreeCanvasBase } from "./ThreeCanvasBase";
 import { PipelineController } from "../controller/PipelineController";
 
 export class RightCanvas extends ThreeCanvasBase {
     private pipeline!: PipelineController;
 
-    constructor(host: HTMLElement, model: AppModel) {
+    constructor(host: HTMLElement, model: ImageModel) {
         super(host, model);
     }
 

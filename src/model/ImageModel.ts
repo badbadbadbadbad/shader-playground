@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export class AppModel {
+export class ImageModel {
     imageDataUrl: string | null = null;
     texture: THREE.Texture | null = null;
     imageAspect = 1;

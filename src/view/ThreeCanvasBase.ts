@@ -1,11 +1,11 @@
 import * as THREE from "three";
-import type { AppModel } from "../model/AppModel";
+import type { ImageModel } from "../model/ImageModel.ts";
 
 const HEX_BORDER = "#b1acc7";
 
 export abstract class ThreeCanvasBase {
     protected readonly host: HTMLElement;
-    protected readonly model: AppModel;
+    protected readonly model: ImageModel;
 
     protected scene!: THREE.Scene;
     protected camera!: THREE.OrthographicCamera;
@@ -13,7 +13,7 @@ export abstract class ThreeCanvasBase {
 
     protected plane!: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
 
-    constructor(host: HTMLElement, model: AppModel) {
+    protected constructor(host: HTMLElement, model: ImageModel) {
         this.host = host;
         this.model = model;
     }
@@ -53,15 +53,15 @@ export abstract class ThreeCanvasBase {
             mat.needsUpdate = true;
         }
 
-        const w = this.model.renderWidth;
-        const h = this.model.renderHeight;
+        const width = this.model.renderWidth;
+        const height = this.model.renderHeight;
 
-        this.renderer.setSize(w, h, false);
+        this.renderer.setSize(width, height, false);
 
-        this.camera.left = -w / 2;
-        this.camera.right = w / 2;
-        this.camera.top = h / 2;
-        this.camera.bottom = -h / 2;
+        this.camera.left = -width / 2;
+        this.camera.right = width / 2;
+        this.camera.top = height / 2;
+        this.camera.bottom = -height / 2;
         this.camera.updateProjectionMatrix();
 
         this.renderOnce();
