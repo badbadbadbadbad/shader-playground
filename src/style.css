@@ -187,7 +187,3 @@ body {
   transition: opacity 0.5s;
   filter: drop-shadow(0 0 20px white);
 }
-
-:root[data-theme="light"] #upload-icon {
-  filter: drop-shadow(0 0 20px black);
-}
