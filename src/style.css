@@ -7,6 +7,19 @@
   --grey-shade6: #dcdae7;
 }
 
+:root[data-theme="light"] {
+  --grey-shade1: #f4f5f7;
+  --grey-shade2: #fdfdff;
+  --grey-shade3: #dfe3ee;
+  --grey-shade4: #b8c0d6;
+  --grey-shade5: #7f89a8;
+  --grey-shade6: #1c1c1f;
+}
+
+body, #header, #logo-img {
+  transition: background-color 0.15s linear, color 0.15s linear, border-color 0.15s linear, opacity 0.15s linear;
+}
+
 /* Source */
 /* https://fonts.google.com/specimen/Open+Sans */
 /* noinspection CssUnknownTarget */
@@ -52,24 +65,44 @@ body {
   background: linear-gradient(100deg, var(--grey-shade2), var(--grey-shade3));
 }
 
-#logo-link {
-  display: flex;
-  align-items: center;
-  height: 90%;
+#header-icons {
   position: absolute;
   left: 10px;
+  height: 90%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   opacity: 0.6;
 }
 
-#logo-img {
+.header-icon {
   height: 80%;
   width: auto;
   opacity: 0.4;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.25s ease, filter 0.15s linear;
 }
 
-#logo-img:hover {
+#logo-link,
+#theme-toggle {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+#theme-toggle {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+#logo-link:hover .header-icon,
+#theme-toggle:hover .header-icon {
   opacity: 1;
+}
+
+:root[data-theme="light"] .header-icon {
+  filter: invert(1);
 }
 
 #scenes {
@@ -153,4 +186,8 @@ body {
   opacity: 0;
   transition: opacity 0.5s;
   filter: drop-shadow(0 0 20px white);
+}
+
+:root[data-theme="light"] #upload-icon {
+  filter: drop-shadow(0 0 20px black);
 }
