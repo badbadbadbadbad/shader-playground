@@ -13,11 +13,15 @@ export class PipelineController {
     private readonly scene: THREE.Scene;
     private readonly camera: THREE.Camera;
     private readonly canvas: HTMLCanvasElement;
+    private readonly renderDebounceMs = 33;
 
+    private inputTexture: THREE.Texture | null = null;
     private composer: EffectComposer;
     private gui: GUI;
     private activeId: PipelineId = PIPELINE_IDS.ANISOTROPIC_KUWAHARA;
     private guiState: { activePipeline: PipelineId } = { activePipeline: PIPELINE_IDS.ANISOTROPIC_KUWAHARA };
+
+    private renderTimer : number | null = null;
 
     private renderSize = { width: 1, height: 1 };
 
@@ -51,8 +55,15 @@ export class PipelineController {
         }
     }
 
-    render(): void {
-        this.composer.render();
+    setInputTexture(texture: THREE.Texture | null): void {
+        this.inputTexture = texture;
+
+        for (const {pass} of this.built) {
+            const uniforms = pass.uniforms as any;
+            if (uniforms?.inputTex) {
+                uniforms.inputTex.value = texture;
+            }
+        }
     }
 
     setPipeline(id: PipelineId): void {
@@ -84,8 +95,9 @@ export class PipelineController {
         this.rebuildGuiForPipeline();
 
         this.setSize(this.renderSize.width, this.renderSize.height);
+        this.setInputTexture(this.inputTexture);
 
-        this.render();
+        this.requestRender();
     }
 
     private rebuildGuiForPipeline(): void {
@@ -110,8 +122,21 @@ export class PipelineController {
 
         for (const { effect, pass } of this.built) {
             if (!effect.buildGui) continue;
-            effect.buildGui(settings as any, pass.uniforms, () => this.render(), effect);
+            effect.buildGui(settings as any, pass.uniforms, () => this.requestRender(), effect);
         }
+    }
+
+    requestRender(): void {
+        if (this.renderTimer !== null) return;
+
+        this.renderTimer = window.setTimeout(() => {
+            this.renderTimer = null;
+            this.render();
+        }, this.renderDebounceMs);
+    }
+
+    render(): void {
+        this.composer.render();
     }
 
     private downloadImage(): void {

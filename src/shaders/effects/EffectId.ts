@@ -1,8 +1,9 @@
 export const EFFECT_IDS = {
     GAMMA: "gamma",
-    STRUCTURE_TENSOR: "structureTensor",
-    GAUSSIAN_BLUR_X: "gaussianBlurX",
-    GAUSSIAN_BLUR_Y: "gaussianBlurY",
+    STRUCTURE_TENSOR: "structure-tensor",
+    GAUSSIAN_BLUR_X: "gaussian-blur-x",
+    GAUSSIAN_BLUR_Y: "gaussian-blur-y",
+    ANISOTROPIC_KUWAHARA: "anisotropic-kuwahara",
 } as const;
 
 export type EffectId = typeof EFFECT_IDS[keyof typeof EFFECT_IDS];

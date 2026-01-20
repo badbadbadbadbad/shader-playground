@@ -13,9 +13,6 @@ export const gammaEffect: Effect = {
         gamma: { value: 0.6 },
     },
     buildGui: (gui, uniforms, onChange, effect) => {
-        gui
-            .add(uniforms.gamma, "value", 0.3, 2.5, 0.1)
-            .name(effect.label)
-            .onChange(onChange);
+        gui.add(uniforms.gamma, "value", 0.3, 2.5, 0.1).name(effect.label).onChange(onChange);
     },
 };

@@ -7,8 +7,8 @@ in vec2 vUv;
 
 out vec4 outColor;
 
-float gaussian(float sigma, float yOffset) {
-    return (1. / sigma * sqrt(2. * PI)) * exp(-(yOffset * yOffset) / (2. * sigma * sigma));
+float gaussian(float sigma, float xOffset) {
+    return (1. / sigma * sqrt(2. * PI)) * exp(-(xOffset * xOffset) / (2. * sigma * sigma));
 }
 
 void main() {
@@ -17,9 +17,9 @@ void main() {
     int kernelRadius = 5;
     float kernelSum = 0.;
 
-    for (int yOffset = -kernelRadius; yOffset <= kernelRadius; yOffset++) {
-        vec4 color = texture2D(tDiffuse, vUv + vec2(0, float(yOffset) * texelSize.y));
-        float gauss = gaussian(2., float(yOffset));
+    for (int xOffset = -kernelRadius; xOffset <= kernelRadius; xOffset++) {
+        vec4 color = texture(tDiffuse, vUv + vec2(float(xOffset) * texelSize.x, 0));
+        float gauss = gaussian(2., float(xOffset));
 
         outColor += color;
         kernelSum += gauss;

@@ -2,7 +2,7 @@ import * as THREE from "three";
 import type {Effect} from "../Effect.ts";
 import {EFFECT_IDS} from "../EffectId.ts";
 import fullscreenVert from "../fullscreen/fullscreen.vert";
-import structureTensorFrag from "../structureTensor/structureTensor.frag";
+import structureTensorFrag from "./structureTensor.frag";
 
 export const structureTensorEffect: Effect = {
     id: EFFECT_IDS.STRUCTURE_TENSOR,
