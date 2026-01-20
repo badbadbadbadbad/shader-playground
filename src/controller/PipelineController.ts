@@ -19,6 +19,8 @@ export class PipelineController {
     private activeId: PipelineId = PIPELINE_IDS.ANISOTROPIC_KUWAHARA;
     private guiState: { activePipeline: PipelineId } = { activePipeline: PIPELINE_IDS.ANISOTROPIC_KUWAHARA };
 
+    private renderSize = { width: 1, height: 1 };
+
     private built: BuiltPass[] = [];
 
     constructor(renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera) {
@@ -35,8 +37,18 @@ export class PipelineController {
         this.setPipeline(this.activeId);
     }
 
-    setSize(w: number, h: number): void {
-        this.composer.setSize(w, h);
+    setSize(width: number, height: number): void {
+        this.renderSize.width = width;
+        this.renderSize.height = height;
+
+        this.composer.setSize(width, height);
+
+        for (const { pass } of this.built) {
+            const uniforms = pass.uniforms as any;
+            if (uniforms?.resolution?.value?.set) {
+                uniforms.resolution.value.set(width, height);
+            }
+        }
     }
 
     render(): void {
@@ -70,6 +82,9 @@ export class PipelineController {
         }
 
         this.rebuildGuiForPipeline();
+
+        this.setSize(this.renderSize.width, this.renderSize.height);
+
         this.render();
     }
 
