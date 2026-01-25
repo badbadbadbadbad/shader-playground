@@ -17,12 +17,13 @@ export class RightCanvas extends ThreeCanvasBase {
     }
 
     override update(): void {
-        super.update();
         this.pipeline.setInputTexture(this.model.texture ?? null);
+        this.pipeline.setSize(this.model.renderWidth, this.model.renderHeight);
+
+        super.update();
     }
 
     protected override renderOnce(): void {
-        this.pipeline.setSize(this.model.renderWidth, this.model.renderHeight);
-        this.pipeline.requestRender();
+        this.pipeline.render();
     }
 }

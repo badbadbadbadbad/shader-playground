@@ -37,6 +37,7 @@
 uniform sampler2D tDiffuse;
 uniform sampler2D inputTex;
 uniform vec2 resolution;
+
 uniform int kernelRadius;
 uniform float zetaModifier;
 uniform float zeroCrossing;

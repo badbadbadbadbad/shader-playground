@@ -13,15 +13,12 @@ export class PipelineController {
     private readonly scene: THREE.Scene;
     private readonly camera: THREE.Camera;
     private readonly canvas: HTMLCanvasElement;
-    private readonly renderDebounceMs = 33;
 
     private inputTexture: THREE.Texture | null = null;
     private composer: EffectComposer;
     private gui: GUI;
     private activeId: PipelineId = PIPELINE_IDS.ANISOTROPIC_KUWAHARA;
     private guiState: { activePipeline: PipelineId } = { activePipeline: PIPELINE_IDS.ANISOTROPIC_KUWAHARA };
-
-    private renderTimer : number | null = null;
 
     private renderSize = { width: 1, height: 1 };
 
@@ -96,8 +93,6 @@ export class PipelineController {
 
         this.setSize(this.renderSize.width, this.renderSize.height);
         this.setInputTexture(this.inputTexture);
-
-        this.requestRender();
     }
 
     private rebuildGuiForPipeline(): void {
@@ -115,6 +110,7 @@ export class PipelineController {
             .name("Pipeline")
             .onChange((v: PipelineId) => {
                 this.setPipeline(v);
+                this.render();
             });
 
         const settings = this.gui.addFolder("Settings");
@@ -122,17 +118,8 @@ export class PipelineController {
 
         for (const { effect, pass } of this.built) {
             if (!effect.buildGui) continue;
-            effect.buildGui(settings as any, pass.uniforms, () => this.requestRender(), effect);
+            effect.buildGui(settings as any, pass.uniforms, () => this.render(), effect);
         }
-    }
-
-    requestRender(): void {
-        if (this.renderTimer !== null) return;
-
-        this.renderTimer = window.setTimeout(() => {
-            this.renderTimer = null;
-            this.render();
-        }, this.renderDebounceMs);
     }
 
     render(): void {
