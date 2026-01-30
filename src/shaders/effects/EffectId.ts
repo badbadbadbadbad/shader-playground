@@ -5,6 +5,7 @@ export const EFFECT_IDS = {
     GAUSSIAN_BLUR_Y: "gaussian-blur-y",
     ANISOTROPIC_KUWAHARA: "anisotropic-kuwahara",
     RADIAL_CHROMATIC_ABERRATION: "radial-chromatic-aberration",
+    VIGNETTE: "vignette",
 } as const;
 
 export type EffectId = typeof EFFECT_IDS[keyof typeof EFFECT_IDS];
