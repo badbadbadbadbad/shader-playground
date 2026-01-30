@@ -9,11 +9,13 @@ in vec2 vUv;
 
 out vec4 outColor;
 
-vec3 sample3Tap(vec2 uv, vec2 offsetUv) {
+vec3 crossBlur(vec2 uv, vec2 offsetUv) {
     vec3 c0 = texture(tDiffuse, uv).rgb;
-    vec3 c1 = texture(tDiffuse, uv + offsetUv).rgb;
-    vec3 c2 = texture(tDiffuse, uv - offsetUv).rgb;
-    return (c0 + c1 + c2) / 3.0;
+    vec3 cx1 = texture(tDiffuse, uv + vec2(offsetUv.x, 0.0)).rgb;
+    vec3 cx2 = texture(tDiffuse, uv - vec2(offsetUv.x, 0.0)).rgb;
+    vec3 cy1 = texture(tDiffuse, uv + vec2(0.0, offsetUv.y)).rgb;
+    vec3 cy2 = texture(tDiffuse, uv - vec2(0.0, offsetUv.y)).rgb;
+    return (c0 + cx1 + cx2 + cy1 + cy2) / 5.0;
 }
 
 void main() {
@@ -23,39 +25,30 @@ void main() {
     float actualRedScale  = redScale  * 0.05;
     float actualBlueScale = blueScale * 0.05;
 
-    vec2 fromCenter = uv - imageCenterUv;
-    float distanceFromCenter = length(fromCenter);
+    vec2 vectorToCenter = uv - imageCenterUv;
+    float distanceToCenter = length(vectorToCenter);
 
-    float edgeFactor = min(distanceFromCenter * 2.0, 1.0);
-    float chromaticFactor = edgeFactor * edgeFactor;
+    float distanceFactor = min(distanceToCenter * 2.0, 1.0);
+    float distanceFactorSquared = distanceFactor * distanceFactor;
+    float redScaleFactor  = 1.0 + distanceFactorSquared * actualRedScale;
+    float blueScaleFactor = 1.0 + distanceFactorSquared * actualBlueScale;
 
-    float redScaleFactor  = 1.0 + chromaticFactor * actualRedScale;
-    float blueScaleFactor = 1.0 + chromaticFactor * actualBlueScale;
+    vec2 redUv  = imageCenterUv + vectorToCenter * redScaleFactor;
+    vec2 blueUv = imageCenterUv + vectorToCenter * blueScaleFactor;
 
-    vec2 redUv  = imageCenterUv + fromCenter * redScaleFactor;
-    vec2 blueUv = imageCenterUv + fromCenter * blueScaleFactor;
+    vec2 absVectorToNearestCorner = min(uv, vec2(1.0) - uv);
+    float edgeFade = smoothstep(0.0, 0.05, min(absVectorToNearestCorner.x, absVectorToNearestCorner.y));
+    float edgeFadeSquared = edgeFade * edgeFade;
 
-    vec2 distanceToEdge = min(uv, vec2(1.0) - uv);
-    float edgeFade = smoothstep(0.0, 0.05, min(distanceToEdge.x, distanceToEdge.y));
-    float fade = edgeFade * edgeFade;
-
-    redUv  = mix(uv, redUv, fade);
-    blueUv = mix(uv, blueUv, fade);
-
-    float blurPixels = blurStrength * chromaticFactor;
+    redUv  = mix(uv, redUv, edgeFadeSquared);
+    blueUv = mix(uv, blueUv, edgeFadeSquared);
 
     vec2 texelUv = vec2(1.0 / resolution.x, 1.0 / resolution.y);
-    vec2 blurOffsetUv = texelUv * blurPixels;
+    vec2 blurOffsetUv = texelUv * blurStrength * distanceFactorSquared;
 
-    vec2 blurOffsetX = vec2(blurOffsetUv.x, 0.0);
+    vec3 redSample   = crossBlur(redUv, blurOffsetUv);
+    vec3 greenSample = crossBlur(uv, blurOffsetUv);
+    vec3 blueSample  = crossBlur(blueUv, blurOffsetUv);
 
-    vec3 redSample   = sample3Tap(redUv,  blurOffsetX);
-    vec3 greenSample = sample3Tap(uv,     blurOffsetX);
-    vec3 blueSample  = sample3Tap(blueUv, blurOffsetX);
-
-    float red   = redSample.r;
-    float green = greenSample.g;
-    float blue  = blueSample.b;
-
-    outColor = vec4(red, green, blue, 1.0);
+    outColor = vec4(redSample.r, greenSample.g, blueSample.b, 1.0);
 }
