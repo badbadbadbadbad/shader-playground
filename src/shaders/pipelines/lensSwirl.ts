@@ -9,7 +9,7 @@ export const lensSwirlPipeline: Pipeline = {
     label: "Lens Swirl",
     effects: [
         radialChromaticAberrationEffect,
-        gammaEffect,
         vignetteEffect,
+        gammaEffect,
     ],
 };
