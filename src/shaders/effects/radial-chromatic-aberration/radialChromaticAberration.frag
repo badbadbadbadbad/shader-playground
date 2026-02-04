@@ -3,20 +3,10 @@ uniform vec2 resolution;
 
 uniform float redScale;
 uniform float blueScale;
-uniform float blurStrength;
 
 in vec2 vUv;
-
 out vec4 outColor;
 
-vec3 crossBlur(vec2 uv, vec2 offsetUv) {
-    vec3 c0 = texture(tDiffuse, uv).rgb;
-    vec3 cx1 = texture(tDiffuse, uv + vec2(offsetUv.x, 0.0)).rgb;
-    vec3 cx2 = texture(tDiffuse, uv - vec2(offsetUv.x, 0.0)).rgb;
-    vec3 cy1 = texture(tDiffuse, uv + vec2(0.0, offsetUv.y)).rgb;
-    vec3 cy2 = texture(tDiffuse, uv - vec2(0.0, offsetUv.y)).rgb;
-    return (c0 + cx1 + cx2 + cy1 + cy2) / 5.0;
-}
 
 void main() {
     vec2 uv = vUv;
@@ -43,12 +33,9 @@ void main() {
     redUv  = mix(uv, redUv, edgeFadeSquared);
     blueUv = mix(uv, blueUv, edgeFadeSquared);
 
-    vec2 texelUv = vec2(1.0 / resolution.x, 1.0 / resolution.y);
-    vec2 blurOffsetUv = texelUv * blurStrength * distanceFactorSquared;
+    float redSample = texture(tDiffuse, redUv).r;
+    float greenSample = texture(tDiffuse, uv).g;
+    float blueSample = texture(tDiffuse, blueUv).b;
 
-    vec3 redSample   = crossBlur(redUv, blurOffsetUv);
-    vec3 greenSample = crossBlur(uv, blurOffsetUv);
-    vec3 blueSample  = crossBlur(blueUv, blurOffsetUv);
-
-    outColor = vec4(redSample.r, greenSample.g, blueSample.b, 1.0);
+    outColor = vec4(redSample, greenSample, blueSample, 1.0);
 }

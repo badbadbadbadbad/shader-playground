@@ -14,11 +14,9 @@ export const radialChromaticAberrationEffect: Effect = {
         resolution: {value: new THREE.Vector2(1, 1)},
         redScale: { value: 0.0 },
         blueScale: { value: 0.0 },
-        blurStrength: { value: 0.0 },
     },
     buildGui: (gui, uniforms, onChange) => {
         gui.add(uniforms.redScale, "value", -1.0, 1.0, 0.01).name("Red aberration").onChange(onChange);
         gui.add(uniforms.blueScale, "value", -1.0, 1.0, 0.01).name("Blue aberration").onChange(onChange);
-        gui.add(uniforms.blurStrength, "value", 0.0, 3.0, 0.05).name("Chromatic blur").onChange(onChange);
     },
 };
