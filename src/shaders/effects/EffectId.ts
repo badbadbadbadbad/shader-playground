@@ -6,6 +6,7 @@ export const EFFECT_IDS = {
     ANISOTROPIC_KUWAHARA: "anisotropic-kuwahara",
     RADIAL_CHROMATIC_ABERRATION: "radial-chromatic-aberration",
     RADIAL_BLUR: "radial-blur",
+    ZOOM_BLUR: "zoom-blur",
     VIGNETTE: "vignette",
 } as const;
 
