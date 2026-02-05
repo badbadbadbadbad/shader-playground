@@ -118,7 +118,11 @@ export class PipelineController {
 
         for (const { effect, pass } of this.built) {
             if (!effect.buildGui) continue;
-            effect.buildGui(settings as any, pass.uniforms, () => this.render(), effect);
+
+            const effectFolder = settings.addFolder(effect.label ?? effect.id);
+            effectFolder.open();
+
+            effect.buildGui(effectFolder as any, pass.uniforms, () => this.render(), effect);
         }
     }
 
