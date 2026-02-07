@@ -14,7 +14,7 @@ export const radialBlurEffect: Effect = {
         radialBlurSize: { value: 0.0 },
     },
     buildGui: (gui, uniforms, onChange) => {
-        gui.add(uniforms.radialBlurStrength, "value", 0.0, 1.5, 0.01).name("Radial strength").onChange(onChange);
-        gui.add(uniforms.radialBlurSize, "value", 0.0, 1.0, 0.01).name("Radial blur size").onChange(onChange);
+        gui.add(uniforms.radialBlurStrength, "value", 0.0, 1.5, 0.01).name("Strength").onChange(onChange);
+        gui.add(uniforms.radialBlurSize, "value", 0.0, 1.0, 0.01).name("Size").onChange(onChange);
     },
 };

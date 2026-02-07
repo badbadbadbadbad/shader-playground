@@ -14,7 +14,7 @@ export const vignetteEffect: Effect = {
         vignetteSize: { value: 0.0 },
     },
     buildGui: (gui, uniforms, onChange) => {
-        gui.add(uniforms.vignetteStrength, "value", 0.0, 3.0, 0.05).name("Vignette strength").onChange(onChange);
-        gui.add(uniforms.vignetteSize, "value", 0.0, 0.5, 0.01).name("Vignette size").onChange(onChange);
+        gui.add(uniforms.vignetteStrength, "value", 0.0, 3.0, 0.05).name("Strength").onChange(onChange);
+        gui.add(uniforms.vignetteSize, "value", 0.0, 0.5, 0.01).name("Size").onChange(onChange);
     },
 };

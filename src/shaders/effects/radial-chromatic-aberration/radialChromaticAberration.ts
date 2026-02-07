@@ -16,7 +16,7 @@ export const radialChromaticAberrationEffect: Effect = {
         blueScale: { value: 0.0 },
     },
     buildGui: (gui, uniforms, onChange) => {
-        gui.add(uniforms.redScale, "value", -1.0, 1.0, 0.01).name("Red aberration").onChange(onChange);
-        gui.add(uniforms.blueScale, "value", -1.0, 1.0, 0.01).name("Blue aberration").onChange(onChange);
+        gui.add(uniforms.redScale, "value", -1.0, 1.0, 0.01).name("Red").onChange(onChange);
+        gui.add(uniforms.blueScale, "value", -1.0, 1.0, 0.01).name("Blue").onChange(onChange);
     },
 };

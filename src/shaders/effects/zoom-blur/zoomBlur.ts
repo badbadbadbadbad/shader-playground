@@ -14,7 +14,7 @@ export const zoomBlurEffect: Effect = {
         zoomBlurSize: { value: 0.0 },
     },
     buildGui: (gui, uniforms, onChange) => {
-        gui.add(uniforms.zoomBlurStrength, "value", 0.0, 1.5, 0.01).name("Zoom blur strength").onChange(onChange);
-        gui.add(uniforms.zoomBlurSize, "value", 0.0, 1.0, 0.01).name("Zoom blur size").onChange(onChange);
+        gui.add(uniforms.zoomBlurStrength, "value", 0.0, 1.5, 0.01).name("Strength").onChange(onChange);
+        gui.add(uniforms.zoomBlurSize, "value", 0.0, 1.0, 0.01).name("Size").onChange(onChange);
     },
 };
