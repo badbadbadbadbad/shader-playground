@@ -8,6 +8,8 @@ export const EFFECT_IDS = {
     RADIAL_BLUR: "radial-blur",
     ZOOM_BLUR: "zoom-blur",
     VIGNETTE: "vignette",
+    LEVEL: "level",
+    SHARPEN: "sharpen",
 } as const;
 
 export type EffectId = typeof EFFECT_IDS[keyof typeof EFFECT_IDS];
