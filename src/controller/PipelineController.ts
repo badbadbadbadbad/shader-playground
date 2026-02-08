@@ -116,6 +116,8 @@ export class PipelineController {
         const settings = this.gui.addFolder("Settings");
         settings.open();
 
+        settings.add({ reset: () => this.resetGuiUniformsToDefaults() }, "reset").name("Reset settings");
+
         for (const { effect, pass } of this.built) {
             if (!effect.buildGui) continue;
 
@@ -138,5 +140,28 @@ export class PipelineController {
         link.href = dataUrl;
         link.download = "render.png";
         link.click();
+    }
+
+    private resetGuiUniformsToDefaults(): void {
+        for (const { effect, pass } of this.built) {
+            const passUniforms = pass.uniforms as any;
+            const defaultUniforms = effect.uniforms as any;
+
+            for (const key of Object.keys(passUniforms)) {
+                const u = passUniforms[key];
+                const def = defaultUniforms?.[key];
+
+                if (!u || !def) continue;
+
+                if (typeof u.value === "number" && typeof def.value === "number") {
+                    u.value = def.value;
+                }
+            }
+        }
+
+        // Make lil-gui sliders reflect the new values
+        this.gui.controllersRecursive().forEach((c) => c.updateDisplay());
+
+        this.render();
     }
 }
