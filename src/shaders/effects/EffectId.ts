@@ -10,6 +10,7 @@ export const EFFECT_IDS = {
     VIGNETTE: "vignette",
     LEVEL: "level",
     SHARPEN: "sharpen",
+    MOTION_BLUR: "motion-blur",
 } as const;
 
 export type EffectId = typeof EFFECT_IDS[keyof typeof EFFECT_IDS];
