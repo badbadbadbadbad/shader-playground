@@ -15,7 +15,7 @@ export const edgeBoostEffect: Effect = {
         opacity: { value: 0.50 },
     },
     buildGui: (gui, uniform, onChange) => {
-        gui.add(uniform.threshold, "value", 0.0, 1.0, 0.01).name("Threshold").onChange(onChange);
-        gui.add(uniform.opacity, "value", 0.0, 1.0, 0.01).name("Opacity").onChange(onChange);
+        gui.add(uniform.threshold, "value", 0.0, 1.0, 0.01).name("Edge sensitivity").onChange(onChange);
+        gui.add(uniform.opacity, "value", 0.0, 1.0, 0.01).name("Strength").onChange(onChange);
     },
 };
