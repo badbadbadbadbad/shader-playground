@@ -11,6 +11,7 @@ export const EFFECT_IDS = {
     LEVEL: "level",
     SHARPEN: "sharpen",
     MOTION_BLUR: "motion-blur",
+    POSTERIZE: "posterize",
 } as const;
 
 export type EffectId = typeof EFFECT_IDS[keyof typeof EFFECT_IDS];
