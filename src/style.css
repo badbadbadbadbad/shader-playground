@@ -67,7 +67,8 @@ body {
 
 #header-icons {
   position: absolute;
-  left: 10px;
+  right: 10px;
+  left: auto;
   height: 90%;
   display: flex;
   align-items: center;
@@ -186,4 +187,13 @@ body {
   opacity: 0;
   transition: opacity 0.5s;
   filter: drop-shadow(0 0 20px white);
+}
+
+.lil-gui {
+  left: 10px;
+  right: auto;
+  top: 10px;
+
+  --width: 250px;
+  --name-width: 40%;
 }
