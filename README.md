@@ -20,6 +20,6 @@ A simple website wrapper for some GLSL shader pipelines I like.
 
 ### Ryuukishi
 
-- ひぐらしの<span style="color:red">な</span>く頃に and うみねこの<span style="color:red">な</span>く頃に for the original effect
+- $$\text{ひぐらしの}\textcolor{#ff0000}{な}\text{く頃に}$$ and $$\text{うみねこの}\textcolor{#ff0000}{な}\text{く頃に}$$ for the original effect
 
 - [The ImageMagick implementation used as a reference](https://old.reddit.com/r/Higurashinonakakoroni/comments/1lmsezv/more_photos_ive_taken_as_higurashi_backgrounds/)
