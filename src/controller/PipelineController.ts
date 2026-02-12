@@ -5,33 +5,61 @@ import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
 import GUI from "lil-gui";
 
 import { PIPELINES, PIPELINE_LIST } from "../shaders/pipelines/PipelineRegistry.ts";
-import {PIPELINE_IDS, type PipelineId} from "../shaders/pipelines/PipelineId.ts";
+import { PIPELINE_IDS, type PipelineId } from "../shaders/pipelines/PipelineId.ts";
 
-type BuiltPass = { effect: any; pass: ShaderPass };
+type BuiltPass = { effect: any; pass: any };
+
+type Dependencies = {
+    createComposer?: (renderer: THREE.WebGLRenderer) => any;
+    createRenderPass?: (scene: THREE.Scene, camera: THREE.Camera) => any;
+    createShaderPass?: (config: any) => any;
+    createGui?: () => any;
+    cloneUniforms?: (uniforms: any) => any;
+    pipelines?: typeof PIPELINES;
+    pipelineList?: typeof PIPELINE_LIST;
+};
 
 export class PipelineController {
     private readonly scene: THREE.Scene;
     private readonly camera: THREE.Camera;
     private readonly canvas: HTMLCanvasElement;
 
+    private readonly dependencies: Required<Dependencies>;
+
     private inputTexture: THREE.Texture | null = null;
-    private composer: EffectComposer;
-    private gui: GUI;
+    private composer: any;
+    private gui: any;
+
     private activeId: PipelineId = PIPELINE_IDS.ANISOTROPIC_KUWAHARA;
-    private guiState: { activePipeline: PipelineId } = { activePipeline: PIPELINE_IDS.ANISOTROPIC_KUWAHARA };
+    private guiState: { activePipeline: PipelineId } = {
+        activePipeline: PIPELINE_IDS.ANISOTROPIC_KUWAHARA,
+    };
 
     private renderSize = { width: 1, height: 1 };
-
     private built: BuiltPass[] = [];
 
-    constructor(renderer: THREE.WebGLRenderer, scene: THREE.Scene, camera: THREE.Camera) {
+    constructor(
+        renderer: THREE.WebGLRenderer,
+        scene: THREE.Scene,
+        camera: THREE.Camera,
+        dependencies: Dependencies = {}
+    ) {
         this.scene = scene;
         this.camera = camera;
-
         this.canvas = renderer.domElement;
 
-        this.composer = new EffectComposer(renderer);
-        this.gui = new GUI();
+        this.dependencies = {
+            createComposer: dependencies.createComposer ?? ((renderer) => new EffectComposer(renderer)),
+            createRenderPass: dependencies.createRenderPass ?? ((scene, camera) => new RenderPass(scene, camera as any)),
+            createShaderPass: dependencies.createShaderPass ?? ((config) => new ShaderPass(config)),
+            createGui: dependencies.createGui ?? (() => new GUI()),
+            cloneUniforms: dependencies.cloneUniforms ?? ((uniform) => THREE.UniformsUtils.clone(uniform)),
+            pipelines: dependencies.pipelines ?? PIPELINES,
+            pipelineList: dependencies.pipelineList ?? PIPELINE_LIST,
+        };
+
+        this.composer = this.dependencies.createComposer(renderer);
+        this.gui = this.dependencies.createGui();
     }
 
     init(): void {
@@ -45,7 +73,7 @@ export class PipelineController {
         this.composer.setSize(width, height);
 
         for (const { pass } of this.built) {
-            const uniforms = pass.uniforms as any;
+            const uniforms = pass.uniforms;
             if (uniforms?.resolution?.value?.set) {
                 uniforms.resolution.value.set(width, height);
             }
@@ -55,8 +83,8 @@ export class PipelineController {
     setInputTexture(texture: THREE.Texture | null): void {
         this.inputTexture = texture;
 
-        for (const {pass} of this.built) {
-            const uniforms = pass.uniforms as any;
+        for (const { pass } of this.built) {
+            const uniforms = pass.uniforms;
             if (uniforms?.inputTex) {
                 uniforms.inputTex.value = texture;
             }
@@ -70,20 +98,22 @@ export class PipelineController {
         this.composer.passes.length = 0;
         this.built = [];
 
-        this.composer.addPass(new RenderPass(this.scene, this.camera as any));
+        this.composer.addPass(this.dependencies.createRenderPass(this.scene, this.camera));
 
-        const pipeline = PIPELINES[id];
+        const pipeline = this.dependencies.pipelines[id];
         for (const effect of pipeline.effects) {
-            const uniforms = THREE.UniformsUtils.clone(effect.uniforms);
+            const uniforms = this.dependencies.cloneUniforms(effect.uniforms);
 
-            const pass = new ShaderPass({
+            const pass = this.dependencies.createShaderPass({
                 uniforms,
                 vertexShader: effect.vertex,
                 fragmentShader: effect.fragment,
             });
 
-            pass.material.glslVersion = THREE.GLSL3;
-            pass.material.needsUpdate = true;
+            if (pass.material) {
+                pass.material.glslVersion = THREE.GLSL3;
+                pass.material.needsUpdate = true;
+            }
 
             this.composer.addPass(pass);
             this.built.push({ effect, pass });
@@ -95,21 +125,25 @@ export class PipelineController {
         this.setInputTexture(this.inputTexture);
     }
 
+    render(): void {
+        this.composer.render();
+    }
+
     private rebuildGuiForPipeline(): void {
         this.gui.destroy();
-        this.gui = new GUI();
+        this.gui = this.dependencies.createGui();
 
         this.gui.add({ downloadImage: () => this.downloadImage() }, "downloadImage").name("Download image");
 
         const options = Object.fromEntries(
-            PIPELINE_LIST.map((pipeline) => [pipeline.label, pipeline.id])
+            this.dependencies.pipelineList.map((pipeline) => [pipeline.label, pipeline.id])
         ) as Record<string, PipelineId>;
 
         this.gui
             .add(this.guiState, "activePipeline", options)
             .name("Pipeline")
-            .onChange((v: PipelineId) => {
-                this.setPipeline(v);
+            .onChange((value: PipelineId) => {
+                this.setPipeline(value);
                 this.render();
             });
 
@@ -124,12 +158,8 @@ export class PipelineController {
             const effectFolder = settings.addFolder(effect.label ?? effect.id);
             effectFolder.open();
 
-            effect.buildGui(effectFolder as any, pass.uniforms, () => this.render(), effect);
+            effect.buildGui(effectFolder, pass.uniforms, () => this.render(), effect);
         }
-    }
-
-    render(): void {
-        this.composer.render();
     }
 
     private downloadImage(): void {
@@ -144,23 +174,22 @@ export class PipelineController {
 
     private resetGuiUniformsToDefaults(): void {
         for (const { effect, pass } of this.built) {
-            const passUniforms = pass.uniforms as any;
-            const defaultUniforms = effect.uniforms as any;
+            const passUniforms = pass.uniforms;
+            const defaultUniforms = effect.uniforms;
 
             for (const key of Object.keys(passUniforms)) {
-                const u = passUniforms[key];
-                const def = defaultUniforms?.[key];
+                const currentUniform = passUniforms[key];
+                const defaultUniform = defaultUniforms?.[key];
 
-                if (!u || !def) continue;
+                if (!currentUniform || !defaultUniform) continue;
 
-                if (typeof u.value === "number" && typeof def.value === "number") {
-                    u.value = def.value;
+                if (typeof currentUniform.value === "number" && typeof defaultUniform.value === "number") {
+                    currentUniform.value = defaultUniform.value;
                 }
             }
         }
 
-        // Make lil-gui sliders reflect the new values
-        this.gui.controllersRecursive().forEach((c) => c.updateDisplay());
+        this.gui.controllersRecursive().forEach((controller: any) => controller.updateDisplay());
 
         this.render();
     }

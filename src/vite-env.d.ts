@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="svelte" />
 
 declare module "*.glsl" {
     const src: string;

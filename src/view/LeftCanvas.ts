@@ -1,4 +1,4 @@
-import { ThreeCanvasBase } from "./ThreeCanvasBase";
+import { ThreeCanvasBase, type ThreeCanvasBaseDependencies } from "./ThreeCanvasBase";
 import type { ImageModel } from "../model/ImageModel.ts";
 
 export class LeftCanvas extends ThreeCanvasBase {
@@ -6,8 +6,14 @@ export class LeftCanvas extends ThreeCanvasBase {
     private readonly iconContainer!: HTMLDivElement;
     private readonly iconImg!: HTMLImageElement;
 
-    constructor(host: HTMLElement, model: ImageModel, fileInput: HTMLInputElement, uploadIconUrl: string) {
-        super(host, model);
+    constructor(
+        host: HTMLElement,
+        model: ImageModel,
+        fileInput: HTMLInputElement,
+        uploadIconUrl: string,
+        dependencies: ThreeCanvasBaseDependencies = {}
+    ) {
+        super(host, model, dependencies);
         this.fileInput = fileInput;
 
         this.iconImg = document.createElement("img");

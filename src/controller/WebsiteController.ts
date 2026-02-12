@@ -14,16 +14,52 @@ export type ViewHandles = {
     fileInput: HTMLInputElement;
 };
 
+type Dependencies = {
+    createModel?: () => ImageModel;
+    createLeftView?: (host: HTMLElement, model: ImageModel, fileInput: HTMLInputElement, uploadIcon: string) => LeftCanvas;
+    createRightView?: (host: HTMLElement, model: ImageModel) => RightCanvas;
+    createTextureLoader?: () => THREE.TextureLoader;
+    uploadIconUrl?: string;
+    defaultImageUrl?: string;
+};
+
 export default class WebsiteController {
-    private model: ImageModel = new AppModelImpl();
+    private readonly model: ImageModel;
     private leftView!: LeftCanvas;
     private rightView!: RightCanvas;
+
+    private readonly deps: Required<Dependencies>;
+
+    private onResize?: () => void;
+    private onDropPrevent?: (e: Event) => void;
+    private onDrop?: (e: DragEvent) => void;
+    private onFileChange?: () => void;
+
+    constructor(deps: Dependencies = {}) {
+        this.deps = {
+            createModel: deps.createModel ?? (() => new AppModelImpl()),
+            createLeftView:
+                deps.createLeftView ??
+                ((host, model, fileInput, uploadIcon) => new LeftCanvas(host, model, fileInput, uploadIcon)),
+            createRightView: deps.createRightView ?? ((host, model) => new RightCanvas(host, model)),
+            createTextureLoader: deps.createTextureLoader ?? (() => new THREE.TextureLoader()),
+            uploadIconUrl: deps.uploadIconUrl ?? uploadIconUrl,
+            defaultImageUrl: deps.defaultImageUrl ?? defaultImageUrl,
+        };
+
+        this.model = this.deps.createModel();
+    }
 
     init(handles: ViewHandles): void {
         document.body.classList.add("loaded");
 
-        this.leftView = new LeftCanvas(handles.leftCanvasHost, this.model, handles.fileInput, uploadIconUrl);
-        this.rightView = new RightCanvas(handles.rightCanvasHost, this.model);
+        this.leftView = this.deps.createLeftView(
+            handles.leftCanvasHost,
+            this.model,
+            handles.fileInput,
+            this.deps.uploadIconUrl
+        );
+        this.rightView = this.deps.createRightView(handles.rightCanvasHost, this.model);
 
         this.leftView.init();
         this.rightView.init();
@@ -31,31 +67,51 @@ export default class WebsiteController {
         this.recomputeSizing(handles.rightCanvasHost);
         this.updateViews();
 
-        window.addEventListener("resize", () => {
+        this.onResize = () => {
             this.recomputeSizing(handles.rightCanvasHost);
             this.updateViews();
-        });
+        };
+        window.addEventListener("resize", this.onResize);
 
-        ["dragenter", "dragover", "dragleave", "drop"].forEach((ev) => {
-            document.body.addEventListener(ev, (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-            });
-        });
+        this.onDropPrevent = (event: Event) => {
+            event.preventDefault();
+            event.stopPropagation();
+        };
+        ["dragenter", "dragover", "dragleave", "drop"].forEach((ev) =>
+            document.body.addEventListener(ev, this.onDropPrevent!)
+        );
 
-        document.body.addEventListener("drop", async (event) => {
+        this.onDrop = async (event: DragEvent) => {
             const file = event.dataTransfer?.files?.[0];
             if (!file || !isImage(file)) return;
             await this.loadImageFromFile(file, handles.rightCanvasHost);
-        });
+        };
+        document.body.addEventListener("drop", this.onDrop);
 
-        handles.fileInput.addEventListener("change", async () => {
+        this.onFileChange = async () => {
             const file = handles.fileInput.files?.[0];
             if (!file || !isImage(file)) return;
             await this.loadImageFromFile(file, handles.rightCanvasHost);
-        });
+        };
+        handles.fileInput.addEventListener("change", this.onFileChange);
 
-        this.loadImageFromUrl(defaultImageUrl, handles.rightCanvasHost).then(() => {});
+        void this.loadImageFromUrl(this.deps.defaultImageUrl, handles.rightCanvasHost);
+    }
+
+    destroy(handles?: ViewHandles): void {
+        if (this.onResize) window.removeEventListener("resize", this.onResize);
+
+        if (this.onDropPrevent) {
+            ["dragenter", "dragover", "dragleave", "drop"].forEach((ev) =>
+                document.body.removeEventListener(ev, this.onDropPrevent!)
+            );
+        }
+
+        if (this.onDrop) document.body.removeEventListener("drop", this.onDrop);
+
+        if (handles && this.onFileChange) {
+            handles.fileInput.removeEventListener("change", this.onFileChange);
+        }
     }
 
     private async loadImageFromFile(file: File, sizingHost: HTMLElement): Promise<void> {
@@ -68,7 +124,7 @@ export default class WebsiteController {
 
         this.model.disposeTexture();
 
-        const loader = new THREE.TextureLoader();
+        const loader = this.deps.createTextureLoader();
         const texture = await new Promise<THREE.Texture>((resolve, reject) => {
             loader.load(dataUrl, resolve, undefined, reject);
         });

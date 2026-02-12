@@ -8,4 +8,8 @@ export default defineConfig({
       svelte(),
       glsl(),
   ],
+  server: { // Run in dev vm, open in host
+      host: "0.0.0.0",
+      port: 5173,
+  },
 });

@@ -8,7 +8,7 @@ import {anisotropicKuwaharaEffect} from "../effects/anisotropic-kuwahara/anisotr
 
 export const anisotropicKuwaharaPipeline: Pipeline = {
     id: PIPELINE_IDS.ANISOTROPIC_KUWAHARA,
-    label: "Anisotropic Kuwahara",
+    label: "Kuwahara",
     effects: [
         structureTensorEffect,
         gaussianBlurXEffect,
