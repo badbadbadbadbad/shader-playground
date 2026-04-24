@@ -163,7 +163,7 @@ describe("PipelineController", () => {
     let defaultPipelineId: string;
 
     beforeEach(() => {
-        defaultPipelineId = PIPELINE_IDS.ANISOTROPIC_KUWAHARA as unknown as string;
+        defaultPipelineId = PIPELINE_IDS.RYUUKISHI as unknown as string;
 
         canvasElement = document.createElement("canvas");
         (canvasElement as any).toDataURL = vi.fn(() => "data:image/png;base64,FAKE_DATA_URL");

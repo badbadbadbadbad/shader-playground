@@ -1,6 +1,6 @@
 export const PIPELINE_IDS = {
     ANISOTROPIC_KUWAHARA: "anisotropicKuwahara",
-    LENS_SWIRL: "lensSwirl",
+    KALEIDOSCOPE: "kaleidoscope",
     RYUUKISHI: "ryuukishi",
 } as const;
 

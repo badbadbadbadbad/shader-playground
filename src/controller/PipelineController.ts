@@ -30,9 +30,9 @@ export class PipelineController {
     private composer: any;
     private gui: any;
 
-    private activeId: PipelineId = PIPELINE_IDS.ANISOTROPIC_KUWAHARA;
+    private activeId: PipelineId = PIPELINE_IDS.RYUUKISHI;
     private guiState: { activePipeline: PipelineId } = {
-        activePipeline: PIPELINE_IDS.ANISOTROPIC_KUWAHARA,
+        activePipeline: PIPELINE_IDS.RYUUKISHI,
     };
 
     private renderSize = { width: 1, height: 1 };

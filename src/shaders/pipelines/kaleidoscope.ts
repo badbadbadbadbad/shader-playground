@@ -5,14 +5,16 @@ import {radialChromaticAberrationEffect} from "../effects/radial-chromatic-aberr
 import {radialBlurEffect} from "../effects/radial-blur/radialBlur.ts";
 import {vignetteEffect} from "../effects/vignette/vignette.ts";
 import {zoomBlurEffect} from "../effects/zoom-blur/zoomBlur.ts";
+import {kaleidoscopeEffect} from "../effects/kaleidoscope/kaleidoscope.ts";
 
-export const lensSwirlPipeline: Pipeline = {
-    id: PIPELINE_IDS.LENS_SWIRL,
-    label: "Lens Swirl",
+export const kaleidoscopePipeline: Pipeline = {
+    id: PIPELINE_IDS.KALEIDOSCOPE,
+    label: "Kaleidoscope",
     effects: [
         radialChromaticAberrationEffect,
         radialBlurEffect,
         zoomBlurEffect,
+        kaleidoscopeEffect,
         vignetteEffect,
         gammaEffect,
     ],
