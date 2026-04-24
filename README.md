@@ -2,7 +2,7 @@
 
 A simple website wrapper for some GLSL shader pipelines I like.
 
-[Live version](https://badbadbadbadbad.github.io/shader-playground)
+[Live version selfhosted on Raspi 2](https://shaders.badbadbad.net/)
 
 # References
 
